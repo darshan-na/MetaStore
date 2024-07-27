@@ -1,9 +1,38 @@
 package main
 
-func main() {
-	peers := []string{"localhost:5001", "localhost:5002", "localhost:5003"}
-	// me := 0
+import (
+	"fmt"
 
-	// raft := server.NewRaft(peers, me)
-	// raft.Run()
+	"github.com/darshan-na/MetaStore/network"
+)
+
+var donech = make(chan bool, 1)
+
+func main() {
+	fmt.Printf("Hello\n")
+	handler := network.Handler{}
+	reqch := make(chan network.Request, 100)
+	server := network.NewHttpServer(&handler, reqch)
+	handler.SetServer(server)
+	server.Start()
+	go network.ReqSerializer(reqch, make(<-chan bool))
+	//use the below code snippet to test the http server
+	// go func() {
+	// 	fmt.Printf("darshan helo\n")
+	// 	for {
+	// 		select {
+	// 		case <-finch:
+	// 			server.Stop()
+	// 			return
+	// 		case req, ok := <-reqch:
+	// 			if !ok {
+	// 				return
+	// 			} else {
+	// 				fmt.Printf("Darshan: Received Request %v\n", req.GetRequest().URL)
+	// 				req.SendResponse(&network.Response{StatusCode: 200, Body: []byte("Success"), ContentType: network.ContentTypeText})
+	// 			}
+	// 		}
+	// 	}
+	// }()
+	<-donech
 }

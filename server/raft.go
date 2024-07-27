@@ -1,9 +1,11 @@
 package server
 
 import (
-	"project/db"
+	// "project/db"
 	"sync"
 	"time"
+
+	"github.com/darshan-na/MetaStore/db"
 )
 
 type LogEntry struct {

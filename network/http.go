@@ -22,7 +22,7 @@ func (ct ContentType) String() string {
 	case ContentTypeText:
 		return "text/plain"
 	default:
-		panic("Invaid Type")
+		panic("Invalid Type")
 	}
 }
 
@@ -213,6 +213,6 @@ func ExecWithTimeout3(actionStr string,
 }
 
 func NewHttpServer(handler http.Handler, reqch chan<- Request) *httpServer {
-	//0.0.0.0 indicates that the server can accept connections from any IP addresses and is listening on port 8080
-	return &httpServer{srv: &http.Server{Addr: "0.0.0.0:8080", Handler: handler, MaxHeaderBytes: 1 << 20}, reqch: reqch}
+	//0.0.0.0 indicates that the server can accept connections from any IP addresses and is listening on port 7070
+	return &httpServer{srv: &http.Server{Addr: "0.0.0.0:7070", Handler: handler, MaxHeaderBytes: 1 << 20}, reqch: reqch}
 }

@@ -5,13 +5,23 @@ services:
     build: .
     ports:
       - "7070:7070"
+    networks:
+      - network_test
 
   server2:
     build: .
     ports:
       - "7071:7070"
+    networks:
+      - network_test
 
   server3:
     build: .
     ports:
       - "7072:7070"
+    networks:
+      - network_test
+
+networks: # network name becomes metastore_network_test
+  network_test:
+    driver: bridge

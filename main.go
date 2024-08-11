@@ -9,7 +9,7 @@ import (
 var donech = make(chan bool, 1)
 
 func main() {
-	fmt.Printf("Hello\n")
+	fmt.Printf("Hello 1\n")
 	handler := network.Handler{}
 	reqch := make(chan network.Request, 100)
 	server := network.NewHttpServer(&handler, reqch)

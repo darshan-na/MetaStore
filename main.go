@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/darshan-na/MetaStore/network"
+	"github.com/darshan-na/MetaStore/rootport"
 )
 
 var donech = make(chan bool, 1)
@@ -15,7 +16,7 @@ func main() {
 	server := network.NewHttpServer(&handler, reqch)
 	handler.SetServer(server)
 	server.Start()
-	go network.ReqSerializer(reqch, make(<-chan bool))
+	go rootport.ReqSerializer(reqch, make(<-chan bool))
 	//use the below code snippet to test the http server
 	// go func() {
 	// 	fmt.Printf("darshan helo\n")

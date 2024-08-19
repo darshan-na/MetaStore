@@ -22,7 +22,7 @@ const (
 )
 
 type Raft struct {
-	mu             sync.Mutex
+	mu             sync.RWMutex
 	peers          []string
 	me             int
 	currentTerm    int
@@ -39,9 +39,23 @@ type Raft struct {
 	db             *db.DB
 }
 
-func NewRaft(peers []string, me int) *Raft {
+func NewRaft() *Raft {
 	// Implementation
-	return &Raft{}
+	return &Raft{peers: make([]string, 0, 5)}
+}
+
+func (rf *Raft) GetPeers() []string {
+	rf.mu.RLock()
+	defer rf.mu.RUnlock()
+	peersCopy := make([]string, len(rf.peers))
+	copy(peersCopy, rf.peers)
+	return peersCopy
+}
+
+func (rf *Raft) SetPeer(hostAddr string) {
+	rf.mu.Lock()
+	defer rf.mu.Unlock()
+	rf.peers = append(rf.peers, hostAddr)
 }
 
 func (rf *Raft) Run() {

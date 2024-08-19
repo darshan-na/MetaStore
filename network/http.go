@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"sync"
 	"time"
+
+	"github.com/darshan-na/MetaStore/server"
 )
 
 type ContentType int
@@ -35,6 +37,9 @@ type Request interface {
 
 	// Send error back to the client.
 	SendError(error) error
+
+	// get http server for this request
+	GetServer() *httpServer
 }
 
 type httpRequest struct {
@@ -46,6 +51,10 @@ type httpRequest struct {
 // GetHttpRequest is part of Request interface.
 func (r *httpRequest) GetRequest() *http.Request {
 	return r.req
+}
+
+func (r *httpRequest) GetServer() *httpServer {
+	return r.srv
 }
 
 // Send is part of Request interface.
@@ -73,9 +82,10 @@ type Server interface {
 	Stop()
 }
 type httpServer struct {
-	lock  sync.RWMutex
-	srv   *http.Server   // http server
-	reqch chan<- Request // request channel back to application
+	lock     sync.RWMutex
+	srv      *http.Server   // http server
+	reqch    chan<- Request // request channel back to application
+	raftNode *server.Raft
 }
 
 func (s *httpServer) Start() chan error {
@@ -105,6 +115,10 @@ func (s *httpServer) shutdown() {
 // Stop is part of Server interface. Once stopped, Start() cannot be called again
 func (s *httpServer) Stop() {
 	s.shutdown()
+}
+
+func (s *httpServer) GetRaftNode() *server.Raft {
+	return s.raftNode
 }
 
 func (s *httpServer) systemHandler(w http.ResponseWriter, r *http.Request) {
@@ -214,5 +228,5 @@ func ExecWithTimeout3(actionStr string,
 
 func NewHttpServer(handler http.Handler, reqch chan<- Request) *httpServer {
 	//0.0.0.0 indicates that the server can accept connections from any IP addresses and is listening on port 7070
-	return &httpServer{srv: &http.Server{Addr: "0.0.0.0:7070", Handler: handler, MaxHeaderBytes: 1 << 20}, reqch: reqch}
+	return &httpServer{srv: &http.Server{Addr: "0.0.0.0:7070", Handler: handler, MaxHeaderBytes: 1 << 20}, reqch: reqch, raftNode: server.NewRaft()}
 }
